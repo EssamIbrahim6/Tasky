@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/core/utils/assets_icons.dart';
 import 'package:tasky/core/utils/assets_images.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 void main() {
   runApp(const MyApp());
 }
