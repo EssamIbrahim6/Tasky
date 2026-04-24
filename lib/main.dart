@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/auth/screens/login_screen.dart';
 import 'package:tasky/core/utils/assets_icons.dart';
 import 'package:tasky/core/utils/assets_images.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LoginScreen(),
     );
   }
 }
