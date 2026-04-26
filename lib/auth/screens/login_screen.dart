@@ -1,10 +1,10 @@
 // import 'package:app6/auth/regester_screen.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky/auth/screens/register_screen.dart';
 import 'package:tasky/core/utils/app_colors.dart';
 import 'package:tasky/home/screens/home_screen.dart';
-
+import 'package:tasky/core/utils/dialog_app.dart';
 import '/core/utils/validator_app.dart';
 import '../widgets/main_buttom_widget.dart';
 
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MainButtomWidget(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
-
+                      login(email: email.text, password: password.text, context: context);
                       // Perform login
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -179,4 +179,22 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+void login({required String email, required String password , required BuildContext context}) async {
+  // Implement your login logic here
+  DialogApp.showLoginDialog(context);
+  try {
+    final credential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+  } on FirebaseAuthException catch (e) {
+    Navigator.of(context).pop();
+    if (e.code == 'user-not-found') {
+      DialogApp.showErrorDialog(context, 'No user found for that email.');
+    } else if (e.code == 'wrong-password') {
+      DialogApp.showErrorDialog(context, 'Wrong password provided.');
+    }
+  }
 }
+
+
+}
+ 

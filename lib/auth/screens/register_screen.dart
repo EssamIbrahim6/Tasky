@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky/core/utils/app_colors.dart';
+import 'package:tasky/core/utils/dialog_app.dart';
 import 'package:tasky/home/screens/home_screen.dart';
 
 import '/core/utils/validator_app.dart';
@@ -210,10 +211,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-}
-
 Future<void> register({required String email, required String password , required BuildContext context}) async {
-   showLoginDialog(context);
+   DialogApp.showLoginDialog(context);
   try {
     final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
@@ -221,28 +220,34 @@ Future<void> register({required String email, required String password , require
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
       log('The password provided is too weak.');
+      DialogApp.showErrorDialog(context, 'The password provided is too weak.');
     } else if (e.code == 'email-already-in-use') {
       log('The account already exists for that email.');
+      DialogApp.showErrorDialog(context, 'The account already exists for that email.');
     }
   } catch (e) {
     log(e.toString());
   }
 }
 
-
-
-void showLoginDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('Login'),
-      content: Text('Login successful!'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text('OK'),
-        ),
-      ],
-    ),
-  );
 }
+
+
+
+
+
+// void showLoginDialog(BuildContext context) {
+//   showDialog(
+//     context: context,
+//     builder: (context) => AlertDialog(
+//       title: Text('Login'),
+//       content: Text('Login successful!'),
+//       actions: [
+//         TextButton(
+//           onPressed: () => Navigator.of(context).pop(),
+//           child: Text('OK'),
+//         ),
+//       ],
+//     ),
+//   );
+// }
