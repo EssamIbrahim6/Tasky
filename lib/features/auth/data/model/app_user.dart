@@ -4,8 +4,8 @@ class AppUser {
   this.id,
  this.email,
  this.name,
-  this.phone,
-     this.password,
+this.phone,
+ this.password,
   });
  String? id;
   String ?email;

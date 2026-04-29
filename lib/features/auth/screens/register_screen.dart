@@ -3,12 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tasky/core/utils/app_colors.dart';
 import 'package:tasky/core/utils/dialog_app.dart';
-import 'package:tasky/home/screens/home_screen.dart';
+import 'package:tasky/features/auth/data/firebase/auth_firebase.dart';
+import 'package:tasky/features/auth/data/model/app_user.dart';
+import 'package:tasky/features/home/screens/home_screen.dart';
 
 import '/core/utils/validator_app.dart';
 import '../widgets/main_buttom_widget.dart';
 
-import '/auth/widgets/text_form_filde_widget.dart';
+import '../widgets/text_form_filde_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({super.key});
@@ -146,10 +148,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 SizedBox(height: 10),
                 MainButtomWidget(
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState!.validate()) {
                       // Perform login
-                        register(email: email.text, password: password.text, context: context);
+                    await register(
+                      user:   AppUser(email: email.text,password: password.text,phone: phone.text,name: fullName.text),
+                      context: context
+                      );
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
@@ -211,25 +216,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-Future<void> register({required String email, required String password , required BuildContext context}) async {
-   DialogApp.showLoginDialog(context);
-  try {
-    final credential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-        Navigator.of(context).pop();
-  } on FirebaseAuthException catch (e) {
-    if (e.code == 'weak-password') {
-      log('The password provided is too weak.');
-      DialogApp.showErrorDialog(context, 'The password provided is too weak.');
-    } else if (e.code == 'email-already-in-use') {
-      log('The account already exists for that email.');
-      DialogApp.showErrorDialog(context, 'The account already exists for that email.');
-    }
-  } catch (e) {
-    log(e.toString());
-  }
-}
 
+  Future<void> register({
+    required AppUser user,
+    required BuildContext context,
+  }) async {
+    DialogApp.showLoginDialog(context);
+
+    try {
+      // final credential = await FirebaseAuth.instance
+      //     .createUserWithEmailAndPassword(email: email, password: password);
+     await AuthAppFirebase.register(user: user);
+
+      Navigator.of(context).pop();
+
+    
+    } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop();
+
+      if (e.code == 'weak-password') {
+        DialogApp.showErrorDialog(context, 'Weak password');
+      } else if (e.code == 'email-already-in-use') {
+        DialogApp.showErrorDialog(context, 'Email already used');
+      }
+
+  
+    } catch (e) {
+      Navigator.of(context).pop();
+      log(e.toString());
+     
+    }
+  }
 }
 
 

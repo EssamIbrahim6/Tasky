@@ -1,14 +1,15 @@
 // import 'package:app6/auth/regester_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tasky/auth/screens/register_screen.dart';
+import 'package:tasky/features/auth/data/firebase/auth_firebase.dart';
+import 'package:tasky/features/auth/screens/register_screen.dart';
 import 'package:tasky/core/utils/app_colors.dart';
-import 'package:tasky/home/screens/home_screen.dart';
+import 'package:tasky/features/home/screens/home_screen.dart';
 import 'package:tasky/core/utils/dialog_app.dart';
 import '/core/utils/validator_app.dart';
 import '../widgets/main_buttom_widget.dart';
 
-import '/auth/widgets/text_form_filde_widget.dart';
+import '../widgets/text_form_filde_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
@@ -90,15 +91,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 // ),
                 SizedBox(height: 30),
                 MainButtomWidget(
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      login(email: email.text, password: password.text, context: context);
-                      // Perform login
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
+                      login(
+                        email: email.text,
+                        password: password.text,
+                        context: context,
                       );
+
+                     
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
+                  
                     }
                   },
                   text: "Login",
@@ -108,9 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      
-
-
 
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
@@ -118,25 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisSize: .min,
           children: [
             SizedBox(height: 14),
-            // MaterialButton(
-            //   minWidth: double.infinity,
-            //   height: 50,
-            //   color: Color(0xFFFF3951),
-            //   shape: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.circular(10),
-            //   ),
-            //   onPressed: () {
-            //     // if (formKey.currentState!.validate()) {
-            //     //   // Perform login
-            //     // }
-            //     Navigator.of(context).push(
-            //       MaterialPageRoute(
-            //         builder: (context) => AppSectionViwe(),
-            //       ),
-            //     );
-            //   },
-            //   child: Text("Next >"),
-            // ),
+
             SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -154,13 +140,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Navigate to sign up screen
                   },
                   child: GestureDetector(
-                   onTap:(){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RegisterScreen(),
-                      ),
-                    );
-                   },
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => RegisterScreen(),
+                        ),
+                      );
+                    },
                     child: Text(
                       "Register now",
                       style: TextStyle(
@@ -179,22 +165,20 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-void login({required String email, required String password , required BuildContext context}) async {
-  // Implement your login logic here
-  DialogApp.showLoginDialog(context);
-  try {
-    final credential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
-  } on FirebaseAuthException catch (e) {
-    Navigator.of(context).pop();
-    if (e.code == 'user-not-found') {
-      DialogApp.showErrorDialog(context, 'No user found for that email.');
-    } else if (e.code == 'wrong-password') {
-      DialogApp.showErrorDialog(context, 'Wrong password provided.');
+void login({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    DialogApp.showLoginDialog(context);
+    final bool result =
+        AuthAppFirebase.login(email: email, password: password) as bool;
+    if (result) {
+      Navigator.of(context).pop();
+      //? Navigator.of(context).pushReplacement();
+    } else {
+      Navigator.of(context).pop();
+      DialogApp.showErrorDialog(context, "error");
     }
   }
 }
-
-
-}
- 

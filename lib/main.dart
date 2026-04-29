@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasky/auth/screens/login_screen.dart';
+import 'package:tasky/features/auth/screens/login_screen.dart';
 import 'package:tasky/core/utils/assets_icons.dart';
 import 'package:tasky/core/utils/assets_images.dart';
 import 'package:firebase_core/firebase_core.dart';
